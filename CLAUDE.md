@@ -7,7 +7,7 @@ App web React (Vite) para gestión de portafolio de proyectos del área de Innov
 - **Frontend:** React 18 + Vite, single-page app, inline styles (no CSS files)
 - **Hosting:** GitHub Pages → dominio custom `innovacion.trigal-digital.com`
 - **Backend:** SharePoint Lists via Power Automate HTTP triggers
-- **Fotos:** GitHub CDN — repo `migueltrigal/portfolio-fotos` (público), token via variable de entorno Vite
+- **Fotos:** GitHub CDN — repo `El-Trigal/portfolio-fotos` (público), token via variable de entorno Vite
 - **Deploy:** GitHub Actions compila automáticamente en cada push a `main`
 
 ## Estructura de archivos
@@ -30,7 +30,7 @@ vite.config.js — Config Vite con base path /portfolio-proyectos/
 ```
 
 ## Variable de entorno
-- **`VITE_GITHUB_TOKEN`**: token de GitHub con acceso write al repo `migueltrigal/portfolio-fotos`
+- **`VITE_GITHUB_TOKEN`**: token de GitHub con acceso write al repo `El-Trigal/portfolio-fotos`
 - En local: crear `.env.local` (ya está en `.gitignore` via `*.local`)
 - En CI: secret en GitHub → Settings → Secrets → `VITE_GITHUB_TOKEN`
 
@@ -142,7 +142,7 @@ vite.config.js — Config Vite con base path /portfolio-proyectos/
 - **Función:** `subirFotoGithub(file, folder)` en `api.js`
 - **Flujo:** selección → compresión canvas (max 1200px, ~900KB) → base64 → PUT GitHub API → URL `raw.githubusercontent.com`
 - **Carpetas:** `/proyectos/` para foto principal, `/avances/` para foto evidencia
-- **Repo:** `migueltrigal/portfolio-fotos` (debe ser público)
+- **Repo:** `El-Trigal/portfolio-fotos` (debe ser público)
 
 ## Sistema de roles
 - **Lector (default):** Solo lectura, sin botones de edición

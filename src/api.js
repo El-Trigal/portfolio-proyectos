@@ -9,7 +9,7 @@ export const API = {
 
 /* ─── GitHub CDN ─── */
 const GH_TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
-const GH_REPO = "migueltrigal/portfolio-fotos";
+const GH_REPO = "El-Trigal/portfolio-fotos";
 const GH_BRANCH = "main";
 
 function slugify(name) {
