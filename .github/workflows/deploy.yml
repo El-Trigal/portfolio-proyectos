@@ -33,6 +33,9 @@ jobs:
         run: npm run build
         env:
           VITE_GITHUB_TOKEN: ${{ secrets.VITE_GITHUB_TOKEN }}
+          VITE_WORKER_URL: ${{ secrets.VITE_WORKER_URL }}
+          VITE_WORKER_SECRET: ${{ secrets.VITE_WORKER_SECRET }}
+          VITE_WORKER_ORIGIN: ${{ secrets.VITE_WORKER_ORIGIN }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

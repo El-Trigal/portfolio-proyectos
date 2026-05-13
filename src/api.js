@@ -1,11 +1,24 @@
+// VITE_WORKER_URL: URL del Cloudflare Worker que cachea la lectura.
+// Si no está definida (dev local sin Worker), apunta directo a Power Automate.
+const PA_LEER = "https://default510f9de096154a978ffa0354dd6cd6.c7.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/cb308f7c39e64f98abd933ffe0635ab8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=PNInfVa9dTDZpAn3R1jKn4r4W24-AlZRgLzSr4sp13Y";
+const WORKER_URL = import.meta.env.VITE_WORKER_URL || PA_LEER;
+
 export const API = {
-  leer: "https://default510f9de096154a978ffa0354dd6cd6.c7.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/cb308f7c39e64f98abd933ffe0635ab8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=PNInfVa9dTDZpAn3R1jKn4r4W24-AlZRgLzSr4sp13Y",
+  leer: WORKER_URL,
   crearProyecto: "https://default510f9de096154a978ffa0354dd6cd6.c7.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/0b0a66ef75bd47d493a17717efe321e0/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=LJ96twTgG06QrD4V_Wi4LGjdKZC6atCyDGs5ZYty8L8",
   editarProyecto: "https://default510f9de096154a978ffa0354dd6cd6.c7.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/d394039fdc7f48738d735876f868341f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=tAES6z_yGn0LSuvGXWr_hyjJON4GAkF9xvViuTrGZB8",
   crearAvance: "https://default510f9de096154a978ffa0354dd6cd6.c7.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/cf34aec0e4a0421b9d01db83ce17818c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=wVFuDJh2W6xpWF-70hcMnA4zhasDoafe2yFunWe8FbM",
   crearContrato: "https://default510f9de096154a978ffa0354dd6cd6.c7.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7c9953ec484d488798d9289f9f1531a6/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=DWZDZC_-STNfCqg2z14mIqMSofaZoSUJl8c3FIm5qBk",
-  crearPago: "https://default510f9de096154a978ffa0354dd6cd6.c7.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/61fb6ce094944cdb8a58bfbae6e49a42/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=qxGaJBSMIyZWFsPXpo7mjIb3n4rccrDHJjbbAeKtHqQ",
+  crearPago: "https://default510f9de096154a978ffa0354dd6cd6.c7.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/61fb6ce094944cdb8a58bfbae6e49a42/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=qxGaJBZMIyZWFsPXpo7mjIb3n4rccrDHJjbbAeKtHqQ",
 };
+
+// Borra el cache del Worker tras cada escritura para que el siguiente reload
+// reciba datos frescos en vez de datos cacheados (stale).
+function invalidarCacheWorker() {
+  const secret = import.meta.env.VITE_WORKER_SECRET;
+  if (!import.meta.env.VITE_WORKER_URL || !secret) return;
+  fetch(WORKER_URL, { headers: { "X-Invalidate": secret } }).catch(() => {});
+}
 
 /* ─── GitHub CDN ─── */
 const GH_TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
@@ -177,7 +190,7 @@ export async function loadAll() {
 }
 
 export async function crearProyecto(data) {
-  return apiCall(API.crearProyecto, "POST", stripEmpty({
+  const result = await apiCall(API.crearProyecto, "POST", stripEmpty({
     nombre: data.name,
     descripcion: data.description,
     responsable: data.responsible,
@@ -191,10 +204,12 @@ export async function crearProyecto(data) {
     fotoPrincipal: data.fotoPrincipal,
     tipoInnovacion: data.innovationType,
   }));
+  invalidarCacheWorker();
+  return result;
 }
 
 export async function editarProyecto(data) {
-  return apiCall(API.editarProyecto, "POST", stripEmpty({
+  const result = await apiCall(API.editarProyecto, "POST", stripEmpty({
     id: data.id,
     nombre: data.name,
     descripcion: data.description,
@@ -208,10 +223,12 @@ export async function editarProyecto(data) {
     fotoPrincipal: data.fotoPrincipal,
     tipoInnovacion: data.innovationType,
   }));
+  invalidarCacheWorker();
+  return result;
 }
 
 export async function crearAvance(proyectoId, data) {
-  return apiCall(API.crearAvance, "POST", stripEmpty({
+  const result = await apiCall(API.crearAvance, "POST", stripEmpty({
     proyectoId,
     titulo: data.title,
     descripcion: data.description,
@@ -220,23 +237,29 @@ export async function crearAvance(proyectoId, data) {
     registradoPor: data.registeredBy,
     fotoEvidencia: data.fotoEvidencia,
   }));
+  invalidarCacheWorker();
+  return result;
 }
 
 
 export async function crearContrato(proyectoId, data) {
-  return apiCall(API.crearContrato, "POST", {
+  const result = await apiCall(API.crearContrato, "POST", {
     proyectoId,
     proveedor: data.provider,
     concepto: data.concept,
     valor: data.value,
   });
+  invalidarCacheWorker();
+  return result;
 }
 
 export async function crearPago(contratoId, data) {
-  return apiCall(API.crearPago, "POST", {
+  const result = await apiCall(API.crearPago, "POST", {
     contratoId,
     fecha: data.date,
     monto: data.amount,
     nota: data.note,
   });
+  invalidarCacheWorker();
+  return result;
 }

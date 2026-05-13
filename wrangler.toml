@@ -1,0 +1,18 @@
+name = "portfolio-cache"
+main = "worker/index.js"
+compatibility_date = "2025-01-01"
+
+# KV namespace para cachear la respuesta de Power Automate.
+# Crear con: npx wrangler kv:namespace create CACHE
+# Luego reemplazar el id de abajo con el que devuelve ese comando.
+[[kv_namespaces]]
+binding = "CACHE"
+id = "d425394d1926412aa65784e72a0bf969"
+
+# Cron: calienta el cache cada 4 minutos para que ningún usuario espere.
+[triggers]
+crons = ["*/4 * * * *"]
+
+# Secret INVALIDATE_SECRET: clave para que el frontend invalide el cache tras escrituras.
+# Añadir con: npx wrangler secret put INVALIDATE_SECRET
+# (usar el mismo valor que VITE_WORKER_SECRET en .env.local y en GitHub Secrets)

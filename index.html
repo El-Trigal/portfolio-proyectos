@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://default510f9de096154a978ffa0354dd6cd6.c7.environment.api.powerplatform.com" crossorigin />
+    <!-- Si hay Worker, preconectar a su dominio también -->
+    <link rel="preconnect" href="%VITE_WORKER_ORIGIN%" crossorigin />
     <!-- font-display=swap: el texto es legible con fuente del sistema mientras carga Outfit -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
@@ -47,7 +49,9 @@
       // Boot prefetch: dispara la llamada a Power Automate y lee la cache
       // ANTES de que el bundle JS termine de descargar/parsear.
       (function () {
-        var API_LEER = "https://default510f9de096154a978ffa0354dd6cd6.c7.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/cb308f7c39e64f98abd933ffe0635ab8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=PNInfVa9dTDZpAn3R1jKn4r4W24-AlZRgLzSr4sp13Y";
+        // %VITE_WORKER_URL% es reemplazado por Vite en build con la URL del Worker.
+        // Si no está configurado, el string queda vacío y se usa el fallback de Power Automate.
+        var API_LEER = "%VITE_WORKER_URL%" || "https://default510f9de096154a978ffa0354dd6cd6.c7.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/cb308f7c39e64f98abd933ffe0635ab8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=PNInfVa9dTDZpAn3R1jKn4r4W24-AlZRgLzSr4sp13Y";
         var CACHE_KEY = "portfolio-cache-v1";
         var MAX_AGE = 7 * 24 * 60 * 60 * 1000;
 
